@@ -1,5 +1,6 @@
-package com.caiolopes.slidepuzzle;
+package com.tain.slidepuzzle;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.content.Context;
@@ -7,19 +8,21 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Paint.Style;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import com.caiolopes.slidepuzzle.model.Board;
-import com.caiolopes.slidepuzzle.model.Place;
-import com.caiolopes.slidepuzzle.R;
 
-/**
- * The Class BoardView. It uses 2-D graphics to display the puzzle board.
- * 
- * @author Caio Lopes
- * @version 1.0 $
- */
-public class BoardView extends View {
+import com.tain.slidepuzzle.A_Star_Class_Solver.AStarClassSolver;
+import com.tain.slidepuzzle.A_Star_Class_Solver.EuclidianDistanceHeuristicStrategy;
+import com.tain.slidepuzzle.A_Star_Class_Solver.Helper;
+import com.tain.slidepuzzle.A_Star_Class_Solver.ParsedBoard;
+import com.tain.slidepuzzle.A_Star_Class_Solver.SolverStepCallback;
+import com.tain.slidepuzzle.model.Board;
+import com.tain.slidepuzzle.model.Place;
+import com.tain.slidepuzzle.R;
+
+
+public class BoardView extends View implements SolverStepCallback {
 
 	/** The board. */
 	private Board board;
@@ -89,6 +92,39 @@ public class BoardView extends View {
 		}
 		return true;
 	}
+
+    @Override
+    public void onStepCallback(int b1, int b2) {
+	    b1++;
+	    b2++;
+	    int old1 = 0, old2 = 0;
+	    for (Place p : board.places()) {
+	        if (!p.hasTile()) {
+	            old1 = p.getX();
+	            old2 = p.getY();
+            }
+        }
+        int delta1 = b2 - old1, delta2 = b1 - old2;
+	    if (delta1 == 0 && delta2 == 0)
+	        return;
+	    Place p = board.at( old1 + delta1, old2 + delta2);
+        if (p != null && p.slidable() && !board.solved()) {
+            p.slide();
+            invalidate();
+        }
+    }
+
+	public void autoSolve() {
+        ParsedBoard k = Helper.convertToSolverRepresentation(board);
+        AStarClassSolver solver = new AStarClassSolver(k.table, this, new EuclidianDistanceHeuristicStrategy());
+		ArrayList<Integer> sol = solver.solve(k.start.x, k.start.y);
+		int x = k.start.x, y = k.start.y;
+		for (Integer i : sol) {
+			onStepCallback(x + AStarClassSolver.dy[i], y + AStarClassSolver.dx[i]);
+			x = x + AStarClassSolver.dy[i];
+			y = y + AStarClassSolver.dx[i];
+		}
+    }
 
 	/*
 	 * (non-Javadoc)

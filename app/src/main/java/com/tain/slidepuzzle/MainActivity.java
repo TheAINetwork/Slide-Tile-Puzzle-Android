@@ -1,4 +1,4 @@
-package com.caiolopes.slidepuzzle;
+package com.tain.slidepuzzle;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -7,26 +7,19 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.caiolopes.slidepuzzle.model.Board;
-import com.caiolopes.slidepuzzle.model.Place;
-import com.caiolopes.slidepuzzle.R;
+import com.tain.slidepuzzle.model.Board;
+import com.tain.slidepuzzle.model.Place;
+import com.tain.slidepuzzle.R;
 
-/**
- * The Class MainActivity.
- * 
- * @see BoardView
- * @see Board
- * @author Caio Lopes
- * @version 1.0 $
- */
-public class MainActivity extends ActionBarActivity {
+
+public class MainActivity extends AppCompatActivity {
 
 	/** The main view. */
 	private ViewGroup mainView;
@@ -137,17 +130,7 @@ public class MainActivity extends ActionBarActivity {
 					.show();
 			break;
 		case R.id.action_help:
-			new AlertDialog.Builder(this)
-					.setTitle("Instructions")
-					.setMessage(
-							"The goal of the puzzle is to place the tiles in order by making sliding moves that use the empty space. The only valid moves are to move a tile which is immediately adjacent to the blank into the location of the blank.")
-					.setPositiveButton("Understood. Let's play!",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int which) {
-									dialog.dismiss();
-								}
-							}).show();
+			boardView.autoSolve();
 			break;
 		}
 		return super.onOptionsItemSelected(item);

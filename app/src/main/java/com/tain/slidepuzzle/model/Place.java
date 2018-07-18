@@ -1,6 +1,6 @@
 // $Id: Place.java,v 1.1 2014/12/01 00:33:19 cheon Exp $
 
-package com.caiolopes.slidepuzzle.model;
+package com.tain.slidepuzzle.model;
 
 /** 
  * A place in a puzzle board. Each place has a pair of 1-based

@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 27
 
     defaultConfig {
-        applicationId "edu.utep.cs.cs4330.hw2"
-        minSdkVersion 8
-        targetSdkVersion 21
+        applicationId "com.tain.slidepuzzle"
+        minSdkVersion 21
+        targetSdkVersion 27
     }
 
     buildTypes {
@@ -19,6 +18,6 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'com.android.support:support-v4:21.0.3'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
 }

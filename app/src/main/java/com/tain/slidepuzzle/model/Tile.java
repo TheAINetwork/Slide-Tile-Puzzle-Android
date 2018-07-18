@@ -1,6 +1,6 @@
 // $Id: Tile.java,v 1.1 2014/12/01 00:33:19 cheon Exp $
 
-package com.caiolopes.slidepuzzle.model;
+package com.tain.slidepuzzle.model;
 
 /** A tile of the puzzle. Each tile has a (unique) number. */
 public class Tile {
