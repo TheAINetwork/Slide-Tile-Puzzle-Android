@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Item {
     public ArrayList<ArrayList<Integer>> table;
-    public ArrayList<Integer> path = new ArrayList<>();
+    public ArrayList<Integer> path = null;
     public int minSteps;
     double heuristic;
 
@@ -18,6 +18,7 @@ public class Item {
         this.table = table;
         this.minSteps = minSteps;
         this.heuristic = heuristic;
-        this.path = new ArrayList<>(newPath);
+        if (newPath != null)
+            this.path = new ArrayList<>(newPath);
     }
 }
