@@ -72,12 +72,13 @@ public class AStarClassSolver {
     }
 
     public ArrayList<Integer> solve(int si, int sj) {
-        pq.add(new Item(duplicateInput(), 0, strategy.heuristic(this.input)));
+        pq.add(new Item(duplicateInput(), 0, strategy.heuristic(this.input), new ArrayList<Integer>));
         ArrayList<Integer> path = null;
+        
         while (!pq.isEmpty()) {
             input = pq.peek().table;
             minSteps = pq.peek().minSteps;
-            path = pq.peek().path;
+            path = new ArrayList<Integer>(pq.peek().path);
             for (int i = 0; i < input.size(); i++) {
                 for (int j = 0; j < input.get(i).size(); j++) {
                     if (input.get(i).get(j) == 0) {
@@ -98,6 +99,7 @@ public class AStarClassSolver {
                         visited.put(currentState, true);
                         path.add(k);
                         pq.add(new Item(duplicateInput(), minSteps + 1, strategy.heuristic(input), path));
+                        path.remove(path.size() - 1);
                     }
                     swapTablePositions(si, sj, si + dy[k], sj + dx[k]);
                 }
