@@ -72,7 +72,7 @@ public class AStarClassSolver {
     }
 
     public ArrayList<Integer> solve(int si, int sj) {
-        pq.add(new Item(duplicateInput(), 0, strategy.heuristic(this.input), new ArrayList<Integer>));
+        pq.add(new Item(duplicateInput(), 0, strategy.heuristic(this.input), new ArrayList<Integer>()));
         ArrayList<Integer> path = null;
         
         while (!pq.isEmpty()) {
