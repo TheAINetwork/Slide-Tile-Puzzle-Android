@@ -3,8 +3,17 @@ package com.tain.slidepuzzle;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -12,11 +21,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.tain.slidepuzzle.model.Board;
 import com.tain.slidepuzzle.model.Place;
 import com.tain.slidepuzzle.R;
+
+import java.io.FileNotFoundException;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 	/** The board size. Default value is an 4x4 game. */
 	private int boardSize = 4;
 
+	Button b;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -50,6 +64,57 @@ public class MainActivity extends AppCompatActivity {
 		moves.setTextColor(Color.WHITE);
 		moves.setTextSize(20);
 		this.newGame();
+
+
+        b = findViewById(R.id.btnSelectImage);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                photoPickerIntent.setType("image/*");
+                photoPickerIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, false);
+                startActivityForResult(Intent.createChooser(photoPickerIntent,"Complete Action Using"), 1);
+            }
+        });
+	}
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
+            Uri pickedImage = data.getData();
+            String[] filePath = { MediaStore.Images.Media.DATA };
+			Bitmap bitmap = null;
+			try {
+				bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(pickedImage));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			bitmap = resizeBitmapFitXY(this.boardView.getWidth(), this.boardView.getHeight(), bitmap);
+            boardView.setBitmap(bitmap);
+        }
+    }
+
+	public Bitmap resizeBitmapFitXY(int width, int height, Bitmap bitmap){
+		Bitmap background = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		float originalWidth = bitmap.getWidth(), originalHeight = bitmap.getHeight();
+		Canvas canvas = new Canvas(background);
+		float scale, xTranslation = 0.0f, yTranslation = 0.0f;
+		if (originalWidth > originalHeight) {
+			scale = height/originalHeight;
+			xTranslation = (width - originalWidth * scale)/2.0f;
+		}
+		else {
+			scale = width / originalWidth;
+			yTranslation = (height - originalHeight * scale)/2.0f;
+		}
+		Matrix transformation = new Matrix();
+		transformation.postTranslate(xTranslation, yTranslation);
+		transformation.preScale(scale, scale);
+		Paint paint = new Paint();
+		paint.setFilterBitmap(true);
+		canvas.drawBitmap(bitmap, transformation, paint);
+		return background;
 	}
 
 	/*

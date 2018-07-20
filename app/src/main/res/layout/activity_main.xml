@@ -5,11 +5,16 @@
     android:layout_height="match_parent"
     android:background="@android:color/black"
     android:orientation="vertical"
-    tools:context="edu.utep.cs.cs4330.hw2.MainActivity" >
+    tools:context="com.tain.slidepuzzle.MainActivity" >
 
     <TextView
         android:id="@+id/moves"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <Button
+        android:id="@+id/btnSelectImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="IMAGE SELECTION"/>
 </LinearLayout>
