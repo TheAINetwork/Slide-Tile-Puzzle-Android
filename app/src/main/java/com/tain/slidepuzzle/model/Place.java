@@ -2,7 +2,12 @@
 
 package com.tain.slidepuzzle.model;
 
-/** 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.view.View;
+
+/**
  * A place in a puzzle board. Each place has a pair of 1-based
  * indices---<code>x</code> for column and <code>y</code> for
  * row---that uniquely identify it in the board. A place can be
@@ -35,7 +40,7 @@ public class Place {
      * the given number for the given board. */
     public Place(int x, int y, int number, Board board) {
         this(x, y, board);
-        tile = new Tile(number);
+        tile = new Tile(number, y, x, this);
     }
 
     /** Return the 1-based column index of this place. */
@@ -62,6 +67,8 @@ public class Place {
     /** Place the given tile in this place. */
     public void setTile(Tile tile) {
         this.tile = tile;
+        if (tile != null)
+            tile.setPlace(this);
     }
     
     /** Is the tile in this place slidable? Return false if this place
@@ -73,4 +80,21 @@ public class Place {
     public void slide() {
     	board.slide(getTile());
     }
+
+    public void onDraw(Canvas canvas) {
+        if (hasTile())
+            tile.onDraw(canvas);
+    }
+
+    public void updateBitmap(Bitmap bitmap) {
+        if (hasTile())
+            tile.updateBitmap(bitmap);
+    }
+
+    public void snapTile() {
+        if (hasTile())
+            tile.snapToPlaceImediate();
+    }
+
+
 }

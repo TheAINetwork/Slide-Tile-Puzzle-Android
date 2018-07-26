@@ -2,6 +2,10 @@
 
 package com.tain.slidepuzzle.model;
 
+import android.graphics.Bitmap;
+
+import com.tain.slidepuzzle.BoardView;
+
 import java.util.*;
 
 /**
@@ -34,7 +38,7 @@ public class Board {
     public Board(int size) {
     	listeners = new ArrayList<BoardChangeListener>();
         this.size = size;
-        places = new ArrayList<Place>(size * size);
+        places = new ArrayList<>(size * size);
         for (int x = 1; x <= size; x++) {
             for (int y = 1; y <= size; y++) {
                 places.add(x == size && y == size ?
@@ -54,6 +58,7 @@ public class Board {
         do { 
             swapTiles();
         } while (!solvable() || solved());
+        snapAllTilesImmediately();
     }
 
     /** Swap two tiles randomly. */
@@ -124,6 +129,7 @@ public class Board {
             	final Place to = blank();
                 to.setTile(tile);
                 p.setTile(null);
+                tile.scheduleAnimatedMove(to.getY() - 1, to.getX() - 1);
                 numOfMoves++;
                 notifyTileSliding(p, to, numOfMoves);
                 if (solved()) {
@@ -131,6 +137,12 @@ public class Board {
                 }
                 return;
             }
+        }
+    }
+
+    public void snapAllTilesImmediately() {
+        for (Place p : places()) {
+            p.snapTile();
         }
     }
    

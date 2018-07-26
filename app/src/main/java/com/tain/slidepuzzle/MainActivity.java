@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.tain.slidepuzzle.model.Board;
 import com.tain.slidepuzzle.model.Place;
 import com.tain.slidepuzzle.R;
+import com.tain.slidepuzzle.model.Tile;
 
 import java.io.FileNotFoundException;
 
@@ -181,8 +182,6 @@ public class MainActivity extends AppCompatActivity {
 								public void onClick(DialogInterface dialog,
 										int which) {
 									board.rearrange();
-									moves.setText("Number of movements: 0");
-									boardView.invalidate();
 								}
 							})
 					.setNegativeButton(android.R.string.no,

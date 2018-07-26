@@ -23,6 +23,7 @@ import com.tain.slidepuzzle.A_Star_Class_Solver.ParsedBoard;
 import com.tain.slidepuzzle.A_Star_Class_Solver.SolverStepCallback;
 import com.tain.slidepuzzle.model.Board;
 import com.tain.slidepuzzle.model.Place;
+import com.tain.slidepuzzle.model.Tile;
 
 
 public class BoardView extends View implements SolverStepCallback {
@@ -31,12 +32,10 @@ public class BoardView extends View implements SolverStepCallback {
 	private Board board;
 
 	/** The width. */
-	private float width;
+	public float width;
 
 	/** The height. */
-	private float height;
-
-	private ArrayList<BoardPiece> pieces;
+	public float height;
 
 	Bitmap bitmap;
 
@@ -55,26 +54,10 @@ public class BoardView extends View implements SolverStepCallback {
 		setFocusableInTouchMode(true);
 	}
 
-	void setUpPieces() {
-	    pieces = new ArrayList<>();
-        for (Place p : board.places()) {
-            BoardPiece bp;
-            if (p.hasTile()) {
-                int origRow = (p.getTile().number() - 1) / 4;
-                int origCol = (p.getTile().number() - 1) % 4;
-                 bp = new BoardPiece(p.getY() - 1, p.getX() - 1, origRow, origCol, (int) width, (int) height, this);
-            }
-            else {
-                bp = new BoardPiece(p.getY() - 1, p.getX() - 1, (int) width, (int) height, this);
-            }
-            pieces.add(bp);
-        }
-    }
-
     void setBitmap(Bitmap bitmap) {
 	    this.bitmap = bitmap;
-	    for (BoardPiece bp : pieces) {
-	        bp.updateBitmap(bitmap);
+	    for (Place p : board.places()) {
+	        p.updateBitmap(bitmap);
         }
     }
 
@@ -88,7 +71,13 @@ public class BoardView extends View implements SolverStepCallback {
 		this.width = w / this.board.size();
 		this.height = h / this.board.size();
 		super.onSizeChanged(w, h, oldw, oldh);
-        setUpPieces();
+		for (Place p : board.places()) {
+			if (p.hasTile()) {
+				Tile t = p.getTile();
+				t.setWidth((int)this.width);
+				t.setHeight((int)this.height);
+			}
+		}
 	}
 
 	/**
@@ -117,16 +106,7 @@ public class BoardView extends View implements SolverStepCallback {
 		if (event.getAction() != MotionEvent.ACTION_DOWN)
 			return super.onTouchEvent(event);
 		Place p = locatePlace(event.getX(), event.getY());
-		//TODO: K, ISSO NÃO FAZ SENTIDO
 		if (p != null && p.slidable() && !board.solved()) {
-            BoardPiece piece = pieces.get((p.getY() - 1) * 4 + (p.getX() - 1));
-            for (Place pl : board.places()) {
-                if (!pl.hasTile()) {
-                    piece.scheduleAnimatedMove(pl.getY() - 1, pl.getX() - 1);
-                    piece = pieces.get((pl.getY() - 1) * 4 + (pl.getX() - 1));
-                    piece.moveImediate(p.getY() - 1, p.getX() - 1);
-                }
-            }
 			p.slide();
 			invalidate();
 		}
@@ -198,28 +178,10 @@ public class BoardView extends View implements SolverStepCallback {
 		FontMetrics fm = foreground.getFontMetrics();
 		float y = (height / 2) - (fm.ascent + fm.descent) / 2;
 
-		Iterator<Place> it = board.places().iterator();
-
-		for (BoardPiece bp : pieces) {
-		    bp.onDraw(canvas);
+		for (Place p : board.places()) {
+		    p.onDraw(canvas);
         }
 
 		invalidate();
-
-//		for (int i = 0; i < board.size(); i++) {
-//			for (int j = 0; j < board.size(); j++) {
-//				if (it.hasNext()) {
-//					Place p = it.next();
-//					if (p.hasTile()) {
-//						String number = Integer.toString(p.getTile().number());
-//						canvas.drawText(number, i * width + x, j * height + y,
-//								foreground);
-//					} else {
-//						canvas.drawRect(i * width, j * height, i * width
-//								+ width, j * height + height, dark);
-//					}
-//				}
-//			}
-//		}
 	}
 }
