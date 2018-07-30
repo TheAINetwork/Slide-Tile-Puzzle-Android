@@ -4,8 +4,8 @@ package com.tain.slidepuzzle.model;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.view.View;
+
+import com.tain.slidepuzzle.IAnimation;
 
 /**
  * A place in a puzzle board. Each place has a pair of 1-based
@@ -94,6 +94,11 @@ public class Place {
     public void snapTile() {
         if (hasTile())
             tile.snapToPlaceImediate();
+    }
+
+    public void updateCustomAnimation(IAnimation animation) {
+        if (hasTile())
+            tile.setCustomAnimation(animation);
     }
 
 

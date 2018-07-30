@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 
 import com.tain.slidepuzzle.IAnimation;
 
@@ -16,7 +17,7 @@ public class Tile {
     private static final int TEXT_SIZE = 48;
     /** The number of this tile. */
     private final int number, x, y;
-    private int wantedx, wantedy, width, height, oldx, oldy, posxscreen, posyscreen, speedx, speedy, left, right, top, bottom;
+    private int wantedx, wantedy, width, height, oldx, oldy, posxscreen, posyscreen, speedx, speedy, left, right, top, bottom, speed;
     private Bitmap bitmap;
     private Paint paint, paint2;
     private IAnimation customAnimation;
@@ -38,6 +39,7 @@ public class Tile {
         this.place = p;
         bitmapCut = new Rect(left, top, right, bottom);
         screenPosition = new Rect(posxscreen, posyscreen, posxscreen + width, posyscreen + height);
+        speed = 10;
     }
 
     void setPlace(Place p) {
@@ -54,6 +56,10 @@ public class Tile {
         this.height = height;
         posyscreen = height * (place.getY() - 1);
         wantedy = posyscreen;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
     }
 
     public void updateBitmap(Bitmap bitmap) {
@@ -100,14 +106,14 @@ public class Tile {
         speedx = 0;
         speedy = 0;
         if (wantedx < posxscreen) {
-            speedx = -1;
+            speedx = -speed;
         } else if (wantedx > posxscreen) {
-            speedx = 1;
+            speedx = speed;
         }
         if (wantedy < posyscreen) {
-            speedy = -1;
+            speedy = -speed;
         } else if (wantedy > posyscreen) {
-            speedy = 1;
+            speedy = speed;
         }
     }
 
@@ -121,12 +127,18 @@ public class Tile {
             return;
         updateSpeed();
         if (wantedx != posxscreen) {
-            posxscreen += speedx;
+            if ((posxscreen < wantedx && posxscreen + speedx > wantedx) || (posxscreen > wantedx && posxscreen + speedx < wantedx))
+                posxscreen = wantedx;
+            else
+                posxscreen += speedx;
         }
         else {
             speedx = 0;
         }
         if (wantedy != posyscreen) {
+            if ((posyscreen < wantedy && posyscreen + speedy > wantedy) || (posyscreen > wantedy && posyscreen + speedy < wantedy))
+                posyscreen = wantedy;
+            else
             posyscreen += speedy;
         }
         else {
@@ -143,17 +155,22 @@ public class Tile {
     }
 
     int getSpeedX() {
+        int speed = speedx;
         if (customAnimation != null) {
-            return speedx * (int) customAnimation.speedFactor(oldx, wantedx, posxscreen);
+            speed = (int)((double)speedx * Math.abs( (customAnimation.speedFactor(oldx, wantedx, posxscreen)))) + 1;
+            if (speed != 0) {
+                Log.i("speed", String.valueOf(speed));
+            }
         }
-        return speedx;
+        return speed;
     }
 
     int getSpeedY() {
+        int speed = speedy;
         if (customAnimation != null) {
-            return speedy * (int) customAnimation.speedFactor(oldy, wantedy, posyscreen);
+            speed = (int)((double)speedy * Math.abs( (customAnimation.speedFactor(oldy, wantedy, posyscreen)))) + 1;
         }
-        return speedy;
+        return speed;
     }
 
     private void calculateBitmap() {

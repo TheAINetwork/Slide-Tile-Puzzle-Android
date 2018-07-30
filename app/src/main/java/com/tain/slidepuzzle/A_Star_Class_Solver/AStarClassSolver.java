@@ -1,19 +1,16 @@
 package com.tain.slidepuzzle.A_Star_Class_Solver;
 
-import android.util.Log;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
 public class AStarClassSolver {
-    private PriorityQueue<Item> pq;
-    private ArrayList<ArrayList<Integer>> input;
-    private SolverStepCallback callback;
-    private HeuristicStrategy strategy;
-    private HashMap<String, Boolean> visited;
-    private int minSteps = -1;
+    protected PriorityQueue<Item> pq;
+    protected ArrayList<ArrayList<Integer>> input;
+    protected SolverStepCallback callback;
+    protected HeuristicStrategy strategy;
+    protected HashMap<String, Boolean> visited;
+    protected int minSteps = -1;
     public static final int[] dy = { -1, 0, 1, 0 }, dx = { 0, 1, 0, -1 };
 
     public AStarClassSolver(ArrayList<ArrayList<Integer>> input, SolverStepCallback callback, HeuristicStrategy strategy) {

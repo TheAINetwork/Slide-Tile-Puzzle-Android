@@ -1,24 +1,16 @@
 package com.tain.slidepuzzle;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Paint.FontMetrics;
-import android.graphics.Paint.Style;
-import android.graphics.Rect;
-import android.util.Log;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 
-import com.tain.slidepuzzle.A_Star_Class_Solver.AStarClassSolver;
 import com.tain.slidepuzzle.A_Star_Class_Solver.EuclidianDistanceHeuristicStrategy;
 import com.tain.slidepuzzle.A_Star_Class_Solver.Helper;
+import com.tain.slidepuzzle.A_Star_Class_Solver.IDAStarClassSolver;
 import com.tain.slidepuzzle.A_Star_Class_Solver.ParsedBoard;
 import com.tain.slidepuzzle.A_Star_Class_Solver.SolverStepCallback;
 import com.tain.slidepuzzle.model.Board;
@@ -54,10 +46,20 @@ public class BoardView extends View implements SolverStepCallback {
 		setFocusableInTouchMode(true);
 	}
 
+	public BoardView(Context context) {
+		super(context);
+	}
+
+	public BoardView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
+
     void setBitmap(Bitmap bitmap) {
 	    this.bitmap = bitmap;
+	    IAnimation anim = new POGAnimationStrategy();
 	    for (Place p : board.places()) {
 	        p.updateBitmap(bitmap);
+	        p.updateCustomAnimation(anim);
         }
     }
 
@@ -136,14 +138,16 @@ public class BoardView extends View implements SolverStepCallback {
 
 	public void autoSolve() {
         ParsedBoard k = Helper.convertToSolverRepresentation(board);
-        AStarClassSolver solver = new AStarClassSolver(k.table, this, new EuclidianDistanceHeuristicStrategy());
-		ArrayList<Integer> sol = solver.solve(k.start.x, k.start.y);
-		int x = k.start.x, y = k.start.y;
-		for (Integer i : sol) {
-			onStepCallback(x + AStarClassSolver.dy[i], y + AStarClassSolver.dx[i]);
-			x = x + AStarClassSolver.dy[i];
-			y = y + AStarClassSolver.dx[i];
-		}
+//        AStarClassSolver solver = new AStarClassSolver(k.table, this, new EuclidianDistanceHeuristicStrategy());
+//		ArrayList<Integer> sol = solver.solve(k.start.x, k.start.y);
+//		int x = k.start.x, y = k.start.y;
+//		for (Integer i : sol) {
+//			onStepCallback(x + AStarClassSolver.dy[i], y + AStarClassSolver.dx[i]);
+//			x = x + AStarClassSolver.dy[i];
+//			y = y + AStarClassSolver.dx[i];
+//		}
+        IDAStarClassSolver solver = new IDAStarClassSolver(k.table, this, new EuclidianDistanceHeuristicStrategy());
+        solver.solve(k.start.x, k.start.y);
     }
 
 	/*
@@ -156,32 +160,9 @@ public class BoardView extends View implements SolverStepCallback {
 		Paint background = new Paint();
 		background.setColor(getResources().getColor(R.color.tile_color));
 		canvas.drawRect(0, 0, getWidth(), getHeight(), background);
-
-		Paint dark = new Paint();
-		dark.setColor(getResources().getColor(R.color.tile_color));
-		dark.setStrokeWidth(15);
-
-		// Draw the major grid lines
-//		for (int i = 0; i < this.board.size(); i++) {
-//			canvas.drawLine(0, i * height, getWidth(), i * height, dark);
-//			canvas.drawLine(i * width, 0, i * width, getHeight(), dark);
-//		}
-
-		Paint foreground = new Paint(Paint.ANTI_ALIAS_FLAG);
-		foreground.setColor(getResources().getColor(R.color.tile_color));
-		foreground.setStyle(Style.FILL);
-		foreground.setTextSize(height * 0.75f);
-		foreground.setTextScaleX(width / height);
-		foreground.setTextAlign(Paint.Align.CENTER);
-
-		float x = width / 2;
-		FontMetrics fm = foreground.getFontMetrics();
-		float y = (height / 2) - (fm.ascent + fm.descent) / 2;
-
 		for (Place p : board.places()) {
 		    p.onDraw(canvas);
         }
-
 		invalidate();
 	}
 }
